@@ -1,5 +1,6 @@
 stages:
   - architecture_check
+  - release
 
 orbit_architect:
   stage: architecture_check
@@ -14,3 +15,13 @@ orbit_architect:
       - mr_comment.md
       - rules.json
       - edges.csv
+
+create-release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: $CI_COMMIT_TAG
+  script: echo "Creating release $CI_COMMIT_TAG"
+  release:
+    tag_name: $CI_COMMIT_TAG
+    description: "Release $CI_COMMIT_TAG of Orbit Architect"
