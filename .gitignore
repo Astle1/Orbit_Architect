@@ -1,0 +1,5 @@
+.venv/
+.venv_fast/
+.venv_linux/
+__pycache__/
+*.pyc

@@ -1,0 +1,16 @@
+stages:
+  - architecture_check
+
+orbit_architect:
+  stage: architecture_check
+  image: python:3.10
+  script:
+    - pip install -r requirements.txt
+    - python src/main.py
+  artifacts:
+    when: always
+    paths:
+      - violation_report.json
+      - mr_comment.md
+      - rules.json
+      - edges.csv

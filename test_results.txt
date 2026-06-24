@@ -1,0 +1,303 @@
+=== Test Case 0: Clean Architecture ===
+Exit Code: 0
+Output:
+=== ORBIT ARCHITECT PIPELINE ===
+
+[1/4] Compiling Architecture Documentation...
+Compiling rules from architecture.md...
+Compiled Rule: frontend may only depend on ['utils'] (high)
+Compiled Rule: utils may only depend on ['services'] (high)
+Compiled Rule: services may only depend on ['database'] (high)
+Rules compiled to rules.json
+
+[2/4] Extracting Orbit Dependency Graph...
+Extracting Orbit Dependency Graph...
+Skipping Orbit SQL extraction (glab not available). Using existing edges.csv
+
+[3/4] Evaluating Dependency Constraints (NetworkX)...
+Graph loaded with 4 nodes and 3 edges.
+Evaluating graph against architectural rules...
+Architecture verified. No violations found.
+
+[4/4] Generating Remediation & MR Comment...
+Architecture verified successfully. Pipeline passes.
+
+========================================
+
+=== Test Case 1: Forbidden Dependency (Transitive Block) ===
+Exit Code: 1
+Output:
+=== ORBIT ARCHITECT PIPELINE ===
+
+[1/4] Compiling Architecture Documentation...
+Compiling rules from architecture.md...
+Compiled Rule: frontend -> database is FORBIDDEN (critical)
+Rules compiled to rules.json
+
+[2/4] Extracting Orbit Dependency Graph...
+Extracting Orbit Dependency Graph...
+Skipping Orbit SQL extraction (glab not available). Using existing edges.csv
+
+[3/4] Evaluating Dependency Constraints (NetworkX)...
+Graph loaded with 4 nodes and 3 edges.
+Evaluating graph against architectural rules...
+VIOLATION FOUND: Path from frontend/ui.ts to database/client.ts via ['frontend/ui.ts', 'utils/bridge.ts', 'services/user_service.ts', 'database/client.ts']
+Violation report saved to violation_report.json
+
+[4/4] Generating Remediation & MR Comment...
+Generating remediation from violation_report.json...
+Remediation markdown written to mr_comment.md
+
+=== FINAL GITLAB MR COMMENT ===
+❌ CRITICAL VIOLATION
+
+Rule:
+Frontend must never depend on Database
+
+Violation Path:
+frontend/ui.ts → utils/bridge.ts → services/user_service.ts → database/client.ts
+
+Impact:
+frontend is now transitively coupled to database.
+
+Why This Rule Exists:
+The frontend module should communicate through abstractions rather than direct structural coupling to database.
+
+Suggested Refactor:
+Introduce an abstraction boundary or intermediate service to decouple these domains.
+
+Mermaid Graph:
+```mermaid
+graph LR
+    ui --> bridge
+    style ui stroke:#f66,stroke-width:2px
+    style bridge stroke:#f66,stroke-width:2px
+    bridge --> user_service
+    style bridge stroke:#f66,stroke-width:2px
+    style user_service stroke:#f66,stroke-width:2px
+    user_service --> client
+    style user_service stroke:#f66,stroke-width:2px
+    style client stroke:#f66,stroke-width:2px
+```
+
+===============================
+
+========================================
+
+=== Test Case 2: Forbidden Dependency (Direct Block) ===
+Exit Code: 1
+Output:
+=== ORBIT ARCHITECT PIPELINE ===
+
+[1/4] Compiling Architecture Documentation...
+Compiling rules from architecture.md...
+Compiled Rule: services -> database is FORBIDDEN (critical)
+Rules compiled to rules.json
+
+[2/4] Extracting Orbit Dependency Graph...
+Extracting Orbit Dependency Graph...
+Skipping Orbit SQL extraction (glab not available). Using existing edges.csv
+
+[3/4] Evaluating Dependency Constraints (NetworkX)...
+Graph loaded with 4 nodes and 3 edges.
+Evaluating graph against architectural rules...
+VIOLATION FOUND: Path from services/user_service.ts to database/client.ts via ['services/user_service.ts', 'database/client.ts']
+Violation report saved to violation_report.json
+
+[4/4] Generating Remediation & MR Comment...
+Generating remediation from violation_report.json...
+Remediation markdown written to mr_comment.md
+
+=== FINAL GITLAB MR COMMENT ===
+❌ CRITICAL VIOLATION
+
+Rule:
+Services must never depend on Database
+
+Violation Path:
+services/user_service.ts → database/client.ts
+
+Impact:
+services is now transitively coupled to database.
+
+Why This Rule Exists:
+The services module should communicate through abstractions rather than direct structural coupling to database.
+
+Suggested Refactor:
+Introduce an abstraction boundary or intermediate service to decouple these domains.
+
+Mermaid Graph:
+```mermaid
+graph LR
+    user_service --> client
+    style user_service stroke:#f66,stroke-width:2px
+    style client stroke:#f66,stroke-width:2px
+```
+
+===============================
+
+========================================
+
+=== Test Case 3: Forbidden Dependency (Allowed/No violation) ===
+Exit Code: 0
+Output:
+=== ORBIT ARCHITECT PIPELINE ===
+
+[1/4] Compiling Architecture Documentation...
+Compiling rules from architecture.md...
+Compiled Rule: frontend -> external is FORBIDDEN (medium)
+Rules compiled to rules.json
+
+[2/4] Extracting Orbit Dependency Graph...
+Extracting Orbit Dependency Graph...
+Skipping Orbit SQL extraction (glab not available). Using existing edges.csv
+
+[3/4] Evaluating Dependency Constraints (NetworkX)...
+Graph loaded with 4 nodes and 3 edges.
+Evaluating graph against architectural rules...
+Architecture verified. No violations found.
+
+[4/4] Generating Remediation & MR Comment...
+Architecture verified successfully. Pipeline passes.
+
+========================================
+
+=== Test Case 4: Allowed Set Semantics (Direct vs Transitive) ===
+Exit Code: 0
+Output:
+=== ORBIT ARCHITECT PIPELINE ===
+
+[1/4] Compiling Architecture Documentation...
+Compiling rules from architecture.md...
+Compiled Rule: frontend may only depend on ['utils'] (high)
+Rules compiled to rules.json
+
+[2/4] Extracting Orbit Dependency Graph...
+Extracting Orbit Dependency Graph...
+Skipping Orbit SQL extraction (glab not available). Using existing edges.csv
+
+[3/4] Evaluating Dependency Constraints (NetworkX)...
+Graph loaded with 4 nodes and 3 edges.
+Evaluating graph against architectural rules...
+Architecture verified. No violations found.
+
+[4/4] Generating Remediation & MR Comment...
+Architecture verified successfully. Pipeline passes.
+
+========================================
+
+=== Test Case 5: Allowed Dependency Set (Violation) ===
+Exit Code: 1
+Output:
+=== ORBIT ARCHITECT PIPELINE ===
+
+[1/4] Compiling Architecture Documentation...
+Compiling rules from architecture.md...
+Compiled Rule: frontend may only depend on ['services'] (high)
+Rules compiled to rules.json
+
+[2/4] Extracting Orbit Dependency Graph...
+Extracting Orbit Dependency Graph...
+Skipping Orbit SQL extraction (glab not available). Using existing edges.csv
+
+[3/4] Evaluating Dependency Constraints (NetworkX)...
+Graph loaded with 4 nodes and 3 edges.
+Evaluating graph against architectural rules...
+VIOLATION FOUND: frontend/ui.ts depends on unauthorized module utils/bridge.ts
+Violation report saved to violation_report.json
+
+[4/4] Generating Remediation & MR Comment...
+Generating remediation from violation_report.json...
+Remediation markdown written to mr_comment.md
+
+=== FINAL GITLAB MR COMMENT ===
+⚠️ HIGH VIOLATION
+
+Rule:
+Frontend may only depend on:
+
+Violation Path:
+frontend/ui.ts → utils/bridge.ts
+
+Impact:
+An unauthorized dependency was introduced in frontend.
+
+Why This Rule Exists:
+The frontend module operates under a strict Allowed Dependency Set.
+
+Suggested Refactor:
+Remove the unauthorized import or update the architecture documentation if this is an intentional structural shift.
+
+Mermaid Graph:
+```mermaid
+graph LR
+    ui --> bridge
+    style ui stroke:#f66,stroke-width:2px
+    style bridge stroke:#f66,stroke-width:2px
+```
+
+===============================
+
+========================================
+
+=== Test Case 6: Multiple Simultaneous Violations ===
+Exit Code: 1
+Output:
+=== ORBIT ARCHITECT PIPELINE ===
+
+[1/4] Compiling Architecture Documentation...
+Compiling rules from architecture.md...
+Compiled Rule: frontend -> database is FORBIDDEN (critical)
+Compiled Rule: utils -> database is FORBIDDEN (critical)
+Rules compiled to rules.json
+
+[2/4] Extracting Orbit Dependency Graph...
+Extracting Orbit Dependency Graph...
+Skipping Orbit SQL extraction (glab not available). Using existing edges.csv
+
+[3/4] Evaluating Dependency Constraints (NetworkX)...
+Graph loaded with 4 nodes and 3 edges.
+Evaluating graph against architectural rules...
+VIOLATION FOUND: Path from frontend/ui.ts to database/client.ts via ['frontend/ui.ts', 'utils/bridge.ts', 'services/user_service.ts', 'database/client.ts']
+Violation report saved to violation_report.json
+
+[4/4] Generating Remediation & MR Comment...
+Generating remediation from violation_report.json...
+Remediation markdown written to mr_comment.md
+
+=== FINAL GITLAB MR COMMENT ===
+❌ CRITICAL VIOLATION
+
+Rule:
+Frontend must never depend on Database
+
+Violation Path:
+frontend/ui.ts → utils/bridge.ts → services/user_service.ts → database/client.ts
+
+Impact:
+frontend is now transitively coupled to database.
+
+Why This Rule Exists:
+The frontend module should communicate through abstractions rather than direct structural coupling to database.
+
+Suggested Refactor:
+Introduce an abstraction boundary or intermediate service to decouple these domains.
+
+Mermaid Graph:
+```mermaid
+graph LR
+    ui --> bridge
+    style ui stroke:#f66,stroke-width:2px
+    style bridge stroke:#f66,stroke-width:2px
+    bridge --> user_service
+    style bridge stroke:#f66,stroke-width:2px
+    style user_service stroke:#f66,stroke-width:2px
+    user_service --> client
+    style user_service stroke:#f66,stroke-width:2px
+    style client stroke:#f66,stroke-width:2px
+```
+
+===============================
+
+========================================
+

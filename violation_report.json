@@ -1,0 +1,61 @@
+{
+  "violation": true,
+  "violations": [
+    {
+      "severity": "critical",
+      "rule_type": "forbidden_dependency",
+      "source": "frontend",
+      "target": "database",
+      "path": [
+        "frontend/ui.ts",
+        "utils/bridge.ts",
+        "services/user_service.ts",
+        "database/client.ts"
+      ],
+      "rule": {
+        "type": "forbidden",
+        "from": "frontend",
+        "to": "database",
+        "original_text": "Frontend must never depend on Database",
+        "severity": "critical"
+      }
+    },
+    {
+      "severity": "high",
+      "rule_type": "forbidden_dependency",
+      "source": "utils",
+      "target": "services",
+      "path": [
+        "utils/bridge.ts",
+        "services/user_service.ts"
+      ],
+      "rule": {
+        "type": "forbidden",
+        "from": "utils",
+        "to": "services",
+        "original_text": "Utils must never depend on services",
+        "severity": "high"
+      }
+    },
+    {
+      "severity": "medium",
+      "rule_type": "allowed_dependency_set",
+      "source": "services",
+      "target": "utils/logger.ts",
+      "path": [
+        "services/user_service.ts",
+        "utils/logger.ts"
+      ],
+      "rule": {
+        "type": "allowed_set",
+        "from": "services",
+        "allowed": [
+          "database"
+        ],
+        "original_text": "Services may only depend on:",
+        "severity": "medium"
+      }
+    }
+  ],
+  "total_rules": 3
+}

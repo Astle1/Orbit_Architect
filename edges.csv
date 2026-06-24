@@ -1,0 +1,5 @@
+source_file,target_file
+services/user_service.ts,database/client.ts
+utils/bridge.ts,services/user_service.ts
+services/user_service.ts,utils/logger.ts
+frontend/ui.ts,utils/bridge.ts

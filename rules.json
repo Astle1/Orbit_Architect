@@ -1,0 +1,27 @@
+{
+  "rules": [
+    {
+      "type": "forbidden",
+      "from": "frontend",
+      "to": "database",
+      "original_text": "Frontend must never depend on Database",
+      "severity": "critical"
+    },
+    {
+      "type": "forbidden",
+      "from": "utils",
+      "to": "services",
+      "original_text": "Utils must never depend on services",
+      "severity": "high"
+    },
+    {
+      "type": "allowed_set",
+      "from": "services",
+      "allowed": [
+        "database"
+      ],
+      "original_text": "Services may only depend on:",
+      "severity": "medium"
+    }
+  ]
+}
