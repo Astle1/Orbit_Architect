@@ -1,0 +1,7 @@
+name: Orbit Architect
+description: A compiler for architecture documentation. Transforms human-readable architectural intent into executable graph constraints, enforcing your design directly inside GitLab Merge Requests using GitLab Orbit.
+version: 1.0.0
+type: flow
+tools:
+  - glab
+  - python
